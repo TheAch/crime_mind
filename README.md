@@ -1,4 +1,4 @@
-# Crimemind — UK Crime Intelligence Platform
+
 
 A full-stack web application for scraping, cleaning, analysing, and predicting UK crime data with a community policing portal.
 
