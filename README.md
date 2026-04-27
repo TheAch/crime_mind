@@ -1,4 +1,4 @@
-# CrimeScope — UK Crime Intelligence Platform
+# Crimemind — UK Crime Intelligence Platform
 
 A full-stack web application for scraping, cleaning, analysing, and predicting UK crime data with a community policing portal.
 
@@ -62,7 +62,7 @@ A full-stack web application for scraping, cleaning, analysing, and predicting U
 ## Project Structure
 
 ```
-crimescope/
+crimemind/
 ├── manage.py
 ├── requirements.txt
 ├── crime_project/
@@ -160,24 +160,7 @@ npm start
 | PATCH | `/api/reports/{id}/update-status/` | Update status |
 | GET | `/api/reports/stats/` | Report statistics |
 
-### Community Policing
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET/POST | `/api/community/members/` | Member profiles |
-| GET | `/api/community/members/officers/` | Online officers |
-| GET | `/api/community/members/leaderboard/` | Reputation board |
-| GET/POST | `/api/community/posts/` | Community feed |
-| POST | `/api/community/posts/{id}/like/` | Like a post |
-| POST | `/api/community/posts/{id}/reply/` | Reply to post |
-| POST | `/api/community/posts/{id}/flag/` | Flag for moderation |
-| POST | `/api/community/posts/{id}/pin/` | Pin/unpin post |
-| GET | `/api/community/posts/pinned/` | Pinned posts |
-| GET/POST | `/api/community/alerts/` | Safety alerts |
-| GET | `/api/community/alerts/active/` | Active alerts only |
-| GET/POST | `/api/community/watches/` | Watch groups |
-| POST | `/api/community/watches/{id}/join/` | Join a group |
-| POST | `/api/community/watches/{id}/leave/` | Leave a group |
-| GET | `/api/community/stats/` | Community statistics |
+
 
 ### Dashboard
 | Method | Endpoint | Description |
@@ -218,16 +201,6 @@ python manage.py seed_community
 ---
 
 ## Environment Variables
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `DJANGO_SECRET_KEY` | dev key | Django secret |
-| `DJANGO_DEBUG` | True | Debug mode |
-| `DB_ENGINE` | sqlite3 | Database engine |
-| `DB_NAME` | db.sqlite3 | Database name |
-| `DB_USER` / `DB_PASSWORD` | — | DB credentials |
-| `DB_HOST` / `DB_PORT` | — | DB connection |
-| `CELERY_BROKER_URL` | redis://localhost:6379/0 | Task queue |
 
 ---
 
