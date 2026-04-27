@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import * as recharts from "recharts";
 import _ from "lodash";
 import {
@@ -10,6 +10,7 @@ import {
   Megaphone, UserCheck, AlertCircle, Info, CheckCircle2, Radio,
   Navigation, Bookmark, Hash, Award, Flame, CircleDot
 } from "lucide-react";
+
 
 const {
   LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
@@ -23,21 +24,46 @@ const {
    THEME & PALETTE — "Midnight Operations" aesthetic
    ═══════════════════════════════════════════════════════════════ */
 const T = {
-  bg: "#06090f", bgAlt: "#0a0f1a",
-  surface: "#0d1320", surfaceHover: "#111a2e",
-  surfaceAlt: "#0f1628", surfaceBright: "#142036",
-  border: "#1a2545", borderLight: "#243060",
-  accent: "#22d3a7", accentDim: "rgba(34,211,167,.12)",
-  accentMid: "rgba(34,211,167,.25)", accentBright: "#2eeec0",
-  blue: "#3b82f6", blueDim: "rgba(59,130,246,.12)",
-  red: "#ef4444", redDim: "rgba(239,68,68,.12)",
-  amber: "#f59e0b", amberDim: "rgba(245,158,11,.12)",
-  purple: "#a855f7", purpleDim: "rgba(168,85,247,.12)",
-  cyan: "#06b6d4", cyanDim: "rgba(6,182,212,.12)",
-  rose: "#f43f5e", pink: "#ec4899",
-  text: "#e2e8f0", textSecondary: "#8494b0",
-  textMuted: "#4d5f80", textDim: "#2d3c5a",
+  bg: "#ffffff",
+  bgAlt: "#f8fafc",
+
+  surface: "#ffffff",
+  surfaceHover: "#f1f5f9",
+  surfaceAlt: "#f8fafc",
+  surfaceBright: "#ffffff",
+
+  border: "#e5e7eb",
+  borderLight: "#eef2f7",
+
+  accent: "#2563eb",
+  accentDim: "rgba(37,99,235,.08)",
+  accentMid: "rgba(37,99,235,.18)",
+  accentBright: "#1d4ed8",
+
+  blue: "#2563eb",
+  blueDim: "rgba(37,99,235,.08)",
+
+  red: "#dc2626",
+  redDim: "rgba(220,38,38,.08)",
+
+  amber: "#d97706",
+  amberDim: "rgba(217,119,6,.08)",
+
+  purple: "#7c3aed",
+  purpleDim: "rgba(124,58,237,.08)",
+
+  cyan: "#0891b2",
+  cyanDim: "rgba(8,145,178,.08)",
+
+  rose: "#e11d48",
+  pink: "#db2777",
+
+  text: "#0f172a",
+  textSecondary: "#334155",
+  textMuted: "#64748b",
+  textDim: "#94a3b8",
 };
+
 
 const COLORS_CHART = [T.accent, T.blue, T.amber, T.purple, T.cyan, T.rose, T.pink, "#fb923c", "#34d399", "#818cf8", "#a3e635", "#e879f9"];
 
@@ -121,7 +147,7 @@ const SAFETY_ALERTS = [
    REUSABLE COMPONENTS
    ═══════════════════════════════════════════════════════════════ */
 
-const Glow = ({ color = T.accent, size = 200, top, right, left, bottom, opacity = 0.06 }) => (
+const Glow = ({ color = T.accent, size = 200, top, right, left, bottom, opacity = 0.03 }) => (
   <div style={{ position:"absolute", width:size, height:size, borderRadius:"50%", background:`radial-gradient(circle, ${color}, transparent 70%)`, opacity, top, right, left, bottom, pointerEvents:"none" }} />
 );
 
@@ -129,8 +155,8 @@ function StatCard({ icon: Icon, label, value, change, color = T.accent, subtitle
   const up = change > 0;
   return (
     <div style={{ background:T.surface, border:`1px solid ${T.border}`, borderRadius:14, padding:"20px 22px", position:"relative", overflow:"hidden", transition:"border-color .25s" }}
-      onMouseEnter={e => e.currentTarget.style.borderColor = color + "50"}
-      onMouseLeave={e => e.currentTarget.style.borderColor = T.border}>
+      onMouseEnter={e => e.currentTarget.style.transform = "translateY(-1px)"}
+      onMouseLeave={e => e.currentTarget.style.transform = "translateY(0)"}>
       <Glow color={color} size={100} top={-30} right={-30} opacity={0.1} />
       <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:14 }}>
         <div style={{ width:38, height:38, borderRadius:10, background:`${color}15`, display:"flex", alignItems:"center", justifyContent:"center" }}>
@@ -218,12 +244,16 @@ function InputField({ label, value, onChange, type = "text", placeholder, option
 }
 
 function PrimaryBtn({ children, onClick, disabled, variant = "primary", small, icon: Icon }) {
-  const styles = {
-    primary: { background:`linear-gradient(135deg, ${T.accent}, #1aae8a)`, color:"#060e0a" },
-    secondary: { background:T.surfaceAlt, color:T.text, border:`1px solid ${T.border}` },
-    danger: { background:`linear-gradient(135deg, ${T.red}, #c0392b)`, color:"#fff" },
-    ghost: { background:"transparent", color:T.textSecondary, border:`1px solid ${T.border}` },
-  };
+  const styles = {primary: {background: T.accent, color: "#ffffff",boxShadow: "0 1px 2px rgba(0,0,0,0.05)"
+  },secondary: { background: T.surfaceHover, color: T.text, border: `1px solid ${T.border}` },danger: { 
+    background: T.red, 
+    color: "#ffffff" 
+  },ghost: { 
+    background: "transparent", 
+    color: T.textSecondary, 
+    border: `1px solid ${T.border}` 
+  },
+};
   return (
     <button onClick={onClick} disabled={disabled} style={{
       padding: small ? "7px 14px" : "11px 22px", borderRadius:9, border:"none", cursor: disabled ? "wait" : "pointer",
@@ -246,10 +276,13 @@ function LeafletMap({ regions, selectedRegion, onSelect }) {
   useEffect(() => {
     if (!mapRef.current || mapObjRef.current) return;
     const link = document.createElement("link");
-    link.rel = "stylesheet"; link.href = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css";
+    link.rel = "stylesheet"; 
+    link.href = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css";
+    link.crossOrigin = "anonymous";
     document.head.appendChild(link);
     const script = document.createElement("script");
     script.src = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js";
+    script.crossOrigin = "anonymous";
     script.onload = () => {
       const L = window.L;
       const map = L.map(mapRef.current, { zoomControl: false, attributionControl: false }).setView([54.0, -2.5], 6);
@@ -563,6 +596,13 @@ function CommunityPortal() {
     setShowNewPost(false);
     setNewPost({ title:"", body:"", category:"concern" });
   };
+  const [users, setUsers] = useState([
+  { id:1, name:"John Smith", role:"officer", email:"john@police.uk" },
+  { id:2, name:"Sarah Ahmed", role:"resident", email:"sarah@email.com" },
+]);
+  
+
+const [newUser, setNewUser] = useState({ name:"", email:"", alias:"", role:"resident" });
 
   return (
     <div style={{ animation:"fadeUp .4s ease" }}>
@@ -575,6 +615,7 @@ function CommunityPortal() {
           { id:"alerts", label:"Safety Alerts", icon:Bell },
           { id:"report", label:"Report Crime", icon:Flag },
           { id:"resources", label:"Resources", icon:Bookmark },
+          { id:"admin", label:"Admin Portal", icon:Shield },
         ].map(t => (
           <button key={t.id} onClick={() => setActiveTab(t.id)} style={{
             padding:"10px 20px", borderRadius:10, border:`1px solid ${activeTab===t.id ? T.accent : T.border}`,
@@ -620,6 +661,8 @@ function CommunityPortal() {
                       { value:"event", label:"Community Event" },
                       { value:"volunteer", label:"Volunteer Call" },
                     ]} />
+                  <div><InputField label="Alias" value={newPost.alias || ""} onChange={v => setNewPost({...newPost, alias:v})}placeholder="Alias"
+/></div>
                   </div>
                   <InputField label="Details" value={newPost.body} onChange={v => setNewPost({...newPost, body:v})} rows={3} placeholder="Share details, context, or information that could help your community..." />
                   <PrimaryBtn onClick={submitPost} icon={Send} small>Post to Community</PrimaryBtn>
@@ -728,7 +771,121 @@ function CommunityPortal() {
           </div>
         </div>
       )}
+      {activeTab === "admin" && (
+  <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:20 }}>
 
+    {/* CREATE USER */}
+    <Panel>
+      <h4 style={{ fontSize:14, fontWeight:700, marginBottom:14, fontFamily:"'Sora', sans-serif" }}>
+        Create New User
+      </h4>
+
+      <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
+
+        <InputField
+          label="Full Name"
+          value={newUser.name}
+          onChange={v => setNewUser({ ...newUser, name:v })}
+          placeholder="Enter name"
+        />
+
+        <InputField
+          label="Email"
+          value={newUser.email}
+          onChange={v => setNewUser({ ...newUser, email:v })}
+          placeholder="Enter email"
+        />
+
+        <InputField
+          label="Alias"
+          value={newUser.alias}
+          onChange={v => setNewUser({ ...newUser, alias:v })}
+          placeholder="Enter alias"
+        />
+
+        <InputField
+          label="Role"
+          value={newUser.role}
+          onChange={v => setNewUser({ ...newUser, role:v })}
+          options={[
+            { value:"resident", label:"Resident" },
+            { value:"officer", label:"Police Officer" },
+            { value:"organisation", label:"Organisation" },
+            { value:"volunteer", label:"Volunteer" },
+          ]}
+        />
+
+        <PrimaryBtn
+          onClick={() => {
+            if (!newUser.name || !newUser.email) return;
+
+            setUsers(prev => [
+              {
+                id: prev.length + 1,
+                ...newUser
+              },
+              ...prev
+            ]);
+
+            setNewUser({ name:"", email:"", role:"resident" });
+          }}
+          icon={Plus}
+          small
+        >
+          Create User
+        </PrimaryBtn>
+
+      </div>
+    </Panel>
+
+    {/* USER LIST */}
+    <Panel>
+      <h4 style={{ fontSize:14, fontWeight:700, marginBottom:14, fontFamily:"'Sora', sans-serif" }}>
+        Manage Users
+      </h4>
+
+      <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+
+        {users.map(user => (
+          <div key={user.id} style={{
+            padding:"12px",
+            border:`1px solid ${T.border}`,
+            borderRadius:10,
+            display:"flex",
+            justifyContent:"space-between",
+            alignItems:"center"
+          }}>
+
+            <div>
+              <div style={{ fontWeight:600, fontSize:13 }}>{user.name}</div>
+              <div style={{ fontSize:11, color:T.textSecondary }}>{user.email}</div>
+              <Badge color={roleStyles[user.role].color} small>
+                {roleStyles[user.role].label}
+              </Badge>
+            </div>
+
+            <button
+              onClick={() => setUsers(prev => prev.filter(u => u.id !== user.id))}
+              style={{
+                background:"none",
+                border:"none",
+                color:T.red,
+                cursor:"pointer",
+                fontSize:12,
+                fontFamily:"'Sora', sans-serif"
+              }}
+            >
+              Delete
+            </button>
+
+          </div>
+        ))}
+
+      </div>
+    </Panel>
+
+  </div>
+)}
       {/* ── SAFETY ALERTS ── */}
       {activeTab === "alerts" && (
         <div>
@@ -793,6 +950,7 @@ function CommunityPortal() {
       )}
     </div>
   );
+
 }
 
 function CommunityReportForm() {
@@ -880,7 +1038,7 @@ function CommunityReportForm() {
 /* ═══════════════════════════════════════════════════════════════
    MAIN APPLICATION
    ═══════════════════════════════════════════════════════════════ */
-export default function CrimeScopeApp() {
+export default function CrimeMindApp() {
   const [tab, setTab] = useState("dashboard");
   const [selectedRegion, setSelectedRegion] = useState(null);
   const [reports, setReports] = useState(SAMPLE_REPORTS);
@@ -889,6 +1047,8 @@ export default function CrimeScopeApp() {
   const [predictions] = useState(genPredictions);
   const [heatmapData] = useState(genHeatmap);
   const [analysisView, setAnalysisView] = useState("trends");
+  const [trendYear, setTrendYear] = useState("2026");
+  const [distYear, setDistYear] = useState("2026");
 
   const totalCrimes = UK_REGIONS.reduce((s, r) => s + r.crimes, 0);
   const avgTrend = (UK_REGIONS.reduce((s, r) => s + r.trend, 0) / UK_REGIONS.length).toFixed(1);
@@ -931,7 +1091,7 @@ export default function CrimeScopeApp() {
             <Shield size={18} color="#060e0a" />
           </div>
           <div>
-            <div style={{ fontSize:16, fontWeight:800, letterSpacing:-0.3 }}>CrimeScope</div>
+            <div style={{ fontSize:16, fontWeight:800, letterSpacing:-0.3 }}>CrimeMind</div>
             <div style={{ fontSize:9, color:T.textDim, fontFamily:"'IBM Plex Mono', monospace", letterSpacing:1.5 }}>UK CRIME INTELLIGENCE</div>
           </div>
         </div>
@@ -970,27 +1130,72 @@ export default function CrimeScopeApp() {
                 <LeafletMap regions={UK_REGIONS} selectedRegion={selectedRegion} onSelect={setSelectedRegion} />
               </div>
               <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
-                <h3 style={{ fontSize:12, fontWeight:700, color:T.textSecondary, margin:0, fontFamily:"'IBM Plex Mono', monospace", letterSpacing:1.2, textTransform:"uppercase" }}>Region Rankings</h3>
-                <div style={{ flex:1, overflowY:"auto", display:"flex", flexDirection:"column", gap:6 }}>
-                  {[...UK_REGIONS].sort((a,b) => b.crimes-a.crimes).map((r, i) => (
-                    <div key={r.name} onClick={() => setSelectedRegion(r)} style={{
-                      background: selectedRegion?.name===r.name ? T.accentDim : T.surface,
-                      border:`1px solid ${selectedRegion?.name===r.name ? T.accent+"50" : T.border}`,
-                      borderRadius:11, padding:"12px 14px", cursor:"pointer", transition:"all .2s",
-                      display:"flex", alignItems:"center", gap:12,
-                    }}>
-                      <span style={{ fontSize:11, fontWeight:800, color:T.textDim, width:22, textAlign:"center", fontFamily:"'IBM Plex Mono', monospace" }}>{i+1}</span>
-                      <div style={{ flex:1 }}>
-                        <div style={{ fontSize:13, fontWeight:700 }}>{r.name}</div>
-                        <div style={{ fontSize:11, color:T.textMuted, fontFamily:"'IBM Plex Mono', monospace" }}>{r.crimes.toLocaleString()}</div>
-                      </div>
-                      <div style={{ display:"flex", alignItems:"center", gap:3, fontSize:12, color:r.trend>0 ? T.red : T.accent, fontFamily:"'IBM Plex Mono', monospace" }}>
-                        {r.trend>0 ? <ArrowUpRight size={12}/> : <ArrowDownRight size={12}/>}{Math.abs(r.trend)}%
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+  
+  <h3 style={{
+    fontSize:12,
+    fontWeight:700,
+    color:T.textSecondary,
+    margin:0,
+    fontFamily:"'IBM Plex Mono', monospace",
+    letterSpacing:1.2,
+    textTransform:"uppercase"
+  }}>
+    Region Selection
+  </h3>
+
+  {/* Dropdown */}
+  <select
+    value={selectedRegion?.name || "All"}
+    onChange={(e) => {
+      const value = e.target.value;
+      if (value === "All") {
+        setSelectedRegion(null);
+      } else {
+        const region = UK_REGIONS.find(r => r.name === value);
+        setSelectedRegion(region);
+      }
+    }}
+    style={{
+      padding:"10px 12px",
+      borderRadius:10,
+      border:`1px solid ${T.border}`,
+      background:T.surface,
+      color:T.text,
+      fontSize:13,
+      fontFamily:"'Sora', sans-serif",
+      outline:"none",
+      cursor:"pointer"
+    }}
+  >
+    <option value="All">All Regions</option>
+    {[...UK_REGIONS]
+      .sort((a,b) => b.crimes - a.crimes)
+      .map(r => (
+        <option key={r.name} value={r.name}>
+          {r.name} ({r.crimes.toLocaleString()})
+        </option>
+      ))
+    }
+  </select>
+
+  {/* Selected Region Display (optional but recommended) */}
+  {selectedRegion && (
+    <div style={{
+      marginTop:10,
+      padding:"12px",
+      border:`1px solid ${T.border}`,
+      borderRadius:10,
+      background:T.surfaceAlt,
+      fontSize:13
+    }}>
+      <strong>{selectedRegion.name}</strong><br />
+      <span style={{ color:T.textSecondary }}>
+        {selectedRegion.crimes.toLocaleString()} incidents • {selectedRegion.trend}% trend
+      </span>
+    </div>
+  )}
+
+</div>
             </div>
             <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:20 }}>
               <Panel>
