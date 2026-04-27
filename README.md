@@ -97,7 +97,7 @@ crimemind/
 ### Backend
 
 ```bash
-cd crimescope
+cd crimemind
 python -m venv venv
 source venv/bin/activate
 
